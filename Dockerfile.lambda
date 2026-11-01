@@ -1,0 +1,13 @@
+FROM public.ecr.aws/awsguru/aws-lambda-adapter:1.1.0 AS adapter
+
+FROM node:26
+
+COPY --from=adapter /lambda-adapter /opt/extensions/lambda-adapter
+
+ENV AWS_LWA_PORT=3000
+
+WORKDIR /app
+COPY ./ /app
+RUN npm install
+
+CMD ["node", "src/000.js"]
