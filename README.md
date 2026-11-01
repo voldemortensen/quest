@@ -1,0 +1,41 @@
+# Docs
+
+A few notes on how/why I did what I did:
+
+1. I spent maybe 3 or 4 hours on this total. I did this on Halloween throughout the day, so lots of interruptions.
+2. I used AI to generate the terraform, but I gave it instructions on services to use. I didn't ask what services were best. In facts I included lambda as an example of a bad choice.
+3. Because I was curious, I reverse engineered the binary to figure out how the secret word was being generated. I did this *after* getting the service running in ECS and finding the secret word that way. I'm happy to provide details on that.
+4. Although I could have deployed things in GCP (I have managed some compute instances, databases, and GKS and then migrated them to AWS), I stuck with AWS because I have more experiece there. I did include several examples of how to deploy things in AWS.
+
+## General
+
+I broke this into a few examples of deploying the service in different ways.
+
+1. EKS
+2. ECS Fargate
+3. Lambda
+4. Lightsail
+
+### General notes
+- Everything used the same VPC, subnets, and load balancer to control costs. Routing is host based.
+- To avoid managed NAT gateway costs I used a fck-nat instance.
+
+### EKS
+- I have the most experience with EKS and Kubernetes in general. I have self managed clusters using kops and lead a migration from a self managed cluster to EKS.
+- Had I had more time there are a number of things I would have done differently:
+  - I would have used a helm chart to deploy the service. Assuming there were more services to deploy I would have stood up ArgoCD to manage deployments.
+  - I would have used HashiCorp Vault and the External Secrets Operator to manage secrets (unless the services could look up secrets on startup so the secrets were only ever in memory instead of env vars).
+  - I would have used AWS Load Balancer Controller to create load balancers.
+  - Managing Kubernetes with terraform in general is a pain. There's nothing wrong with terraform, I just don't think it's the right tool for the job.
+- There are some detection issues with EKS that have to do with IMDSv2. If IMDSv2 is required and the hop limit is set to 1 then it says it's not in AWS, GCP, or Azure. If the hop limit is set to 2 then it detects Kubernetes,ECS,AWS. If I set IMDSv2 to optional then it detects Kubernetes,EKS,AWS.
+
+### ECS Fargate
+- I have personally only used ECS once before and it was a number of years ago. I now remember one of the reasons I didn't like it: deploys take forever. Configuration for this was pretty straightforward.
+- If this was the only workload then EKS would've been overkill and I'd recommend ECS.
+
+### Lambda
+- Lambda isn't a great choice for this service. Even without the lambda web adapter an HTTP service isn't great for lambda. There will be lots of cold starts, no in memory caching, no websockets (if needed), etc. I included this to show a bad example.
+
+### Lightsail
+- I have only ever read about Lightsail. I used this as an excuse to learn more about it.
+- The terraform provider can't wait for a Lightsail certificate to be validated, so the options are either let terraform fail, wait for validation, then run terraform again, or use a local exec to wait for validation.
