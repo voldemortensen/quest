@@ -2,19 +2,19 @@
 
 A few notes on how/why I did what I did:
 
-1. I spent maybe 3 or 4 hours on this total. I did this on Halloween throughout the day, so lots of interruptions.
+1. I spent maybe 4 or 5 hours on this total. I did this on Halloween throughout the day, so lots of interruptions.
 2. I used AI to generate the terraform, but I gave it instructions on services to use. I didn't ask what services were best. In facts I included lambda as an example of a bad choice.
-3. Because I was curious, I reverse engineered the binary to figure out how the secret word was being generated. I did this *after* getting the service running in ECS and finding the secret word that way. I'm happy to provide details on that.
+3. Because I was curious, I reverse engineered the binary to figure out how the secret word was being generated. I did this *after* getting the service running in ECS and finding the secret word that way. I'm happy to provide details on how I did that.
 4. Although I could have deployed things in GCP (I have managed some compute instances, databases, and GKS and then migrated them to AWS), I stuck with AWS because I have more experiece there. I did include several examples of how to deploy things in AWS.
 
 ## General
 
 I broke this into a few examples of deploying the service in different ways.
 
-1. EKS
-2. ECS Fargate
-3. Lambda
-4. Lightsail
+1. EKS (accessed at `https://eks.insekure.com`)
+2. ECS Fargate (accessed at `https://ecs.insekure.com`)
+3. Lambda (accessed at `https://lambda.insekure.com`)
+4. Lightsail (accessed at `https://lightsail.insekure.com`)
 
 ### General notes
 - Everything used the same VPC, subnets, and load balancer to control costs. Routing is host based.
